@@ -199,39 +199,3 @@ for name, model in models.items():
         "best_params": grid.best_params_
     })
 
-    # Sauvegarde du modèle
-    joblib.dump(best, os.path.join(OUTPUT_DIR, f"{name}.joblib"))
-
-    # Rapport texte
-    with open(os.path.join(OUTPUT_DIR, f"{name}_report.txt"), "w") as f:
-        f.write(classification_report(y_test, y_pred))
-
-    # Matrice de confusion
-    plt.figure(figsize=(5,4))
-    sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt="d", cmap="Blues")
-    plt.title(f"Confusion Matrix — {name}")
-    plt.savefig(os.path.join(OUTPUT_DIR, f"{name}_confusion.png"))
-    plt.close()
-
-    # ROC
-    if y_proba is not None:
-        fpr, tpr, _ = roc_curve(y_test, y_proba)
-        plt.figure(figsize=(6,5))
-        plt.plot(fpr, tpr)
-        plt.plot([0,1], [0,1], linestyle="--")
-        plt.title(f"ROC Curve — {name} (AUC={auc:.3f})")
-        plt.xlabel("FPR")
-        plt.ylabel("TPR")
-        plt.savefig(os.path.join(OUTPUT_DIR, f"{name}_ROC.png"))
-        plt.close()
-
-
-# ----------------------------
-# 6. EXPORT RÉSUMÉ FINAL
-# ----------------------------
-results_df = pd.DataFrame(results)
-results_df.to_csv(os.path.join(OUTPUT_DIR, "summary_results.csv"), index=False)
-
-print("\n--- ANALYSE TERMINÉE ---")
-print("Les résultats se trouvent dans :", OUTPUT_DIR)
-print(results_df)
